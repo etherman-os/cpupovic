@@ -6,6 +6,8 @@ Your CPU was already suffering. Now it suffers with style.
 
 CPUpovic is a tray-first desktop toy app that turns computer activity into engine-like sound. It is not a hardware monitor trying to be serious. It reads CPU load, smooths the signal, maps it into an engine level, and drives a selectable Sound Pack.
 
+CPUpovic is built with Tauri and is intended to support Linux, Windows, and macOS. It is currently tested on Linux. Windows and macOS builds are planned.
+
 ## MVP
 
 - Tauri v2 desktop app
@@ -18,7 +20,21 @@ CPUpovic is a tray-first desktop toy app that turns computer activity into engin
 - Internal quiet fallback for missing sound files and development
 - Start/pause, mute, volume, thresholds, effects
 
+## Download
+
+Normal users should download a packaged release from GitHub Releases. They do not need to keep a terminal open.
+
+Linux release options:
+
+- `.AppImage`: download, mark executable if needed, then double-click or run it.
+- `.deb`: install on Debian/Ubuntu-based systems.
+- `.rpm`: install on Fedora/RHEL/openSUSE-style systems.
+
+The source code archive is for developers. If you download the source instead of a packaged release, you will need the terminal commands below.
+
 ## Run
+
+For local development:
 
 ```bash
 npm install
