@@ -1,0 +1,34 @@
+{
+  "id": "supara",
+  "displayName": "Supara Pack",
+  "engineType": "sampleHybrid",
+  "description": "Fictional turbo tuner-style engine soundpack with boost, flutter, burble, and limiter effects.",
+  "author": "etherman-os",
+  "license": "Adobe Firefly generated output",
+  "sourceUrl": "",
+  "assets": {
+    "idle": "idle.wav",
+    "low": "low.wav",
+    "mid": "mid.wav",
+    "high": "high.wav",
+    "revBurst": "rev_burst.wav",
+    "cooldown": "cooldown.wav",
+    "antiLagPops": "anti_lag_pops.wav",
+    "boostSpool": "boost_spool.wav",
+    "burbleShort": "burble_short.wav",
+    "redlineBurst": "redline_burst.wav",
+    "revLimiter": "rev_limiter.wav",
+    "turboFlutter": "turbo_flutter.wav"
+  },
+  "tuning": {
+    "crossfadeMs": 170,
+    "minPlaybackRate": 0.96,
+    "maxPlaybackRate": 1.06,
+    "idleGain": 0.42,
+    "lowGain": 0.58,
+    "midGain": 0.72,
+    "highGain": 0.86,
+    "oneShotGain": 0.75,
+    "effectCooldownMs": 900
+  }
+}

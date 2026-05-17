@@ -1,0 +1,28 @@
+{
+  "id": "local-engine",
+  "displayName": "Local Engine Pack",
+  "engineType": "sampleHybrid",
+  "description": "User-provided sample-hybrid engine pack. Add legal idle/low/mid/high loop files locally.",
+  "author": "Local user",
+  "license": "Audio asset terms documented separately in LICENSES.md",
+  "sourceUrl": "",
+  "assets": {
+    "idle": "idle.wav",
+    "low": "low.wav",
+    "mid": "mid.wav",
+    "high": "high.wav",
+    "revBurst": "rev_burst.wav",
+    "cooldown": "cooldown.wav"
+  },
+  "tuning": {
+    "crossfadeMs": 180,
+    "minPlaybackRate": 0.96,
+    "maxPlaybackRate": 1.06,
+    "idleGain": 0.4,
+    "lowGain": 0.56,
+    "midGain": 0.68,
+    "highGain": 0.78,
+    "oneShotGain": 0.68,
+    "effectCooldownMs": 900
+  }
+}
