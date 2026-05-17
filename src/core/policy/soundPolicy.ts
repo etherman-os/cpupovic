@@ -46,20 +46,24 @@ export function evaluateSoundPolicy(
     settings.cpuThresholdOn,
     settings.cpuThresholdOff,
   );
+  const currentRawCpuCanTriggerEffects = engineSignal.rawCpuPercent >= settings.cpuThresholdOn;
+  const previousRawCpuStartedSound = runtimeState.currentCpuPercent >= settings.cpuThresholdOn;
+  const canPlayCooldownAfterRealDrop =
+    runtimeState.soundActive &&
+    previousRawCpuStartedSound &&
+    engineSignal.falling &&
+    settings.cooldownPsshEnabled;
 
   if (!thresholdAllowsContinuous) {
-    const allowCooldownOneShot =
-      runtimeState.soundActive && engineSignal.falling && settings.cooldownPsshEnabled;
-
     return {
       shouldPlayContinuousEngine: false,
-      allowOneShots: allowCooldownOneShot,
-      effectiveVolume: allowCooldownOneShot ? settings.volume : 0,
+      allowOneShots: canPlayCooldownAfterRealDrop,
+      effectiveVolume: canPlayCooldownAfterRealDrop ? settings.volume : 0,
       reason: "below_threshold",
     };
   }
 
-  if (engineSignal.spike && settings.revBurstEnabled) {
+  if (engineSignal.spike && settings.revBurstEnabled && currentRawCpuCanTriggerEffects) {
     return {
       shouldPlayContinuousEngine: true,
       allowOneShots: true,
@@ -69,10 +73,10 @@ export function evaluateSoundPolicy(
   }
 
   if (engineSignal.throttle >= 0.85) {
-    return active(settings.volume, "redline");
+    return active(settings.volume, "redline", currentRawCpuCanTriggerEffects);
   }
 
-  return active(settings.volume, "above_threshold");
+  return active(settings.volume, "above_threshold", currentRawCpuCanTriggerEffects);
 }
 
 function quiet(reason: SoundPolicyReason): SoundPolicyDecision {
@@ -84,10 +88,14 @@ function quiet(reason: SoundPolicyReason): SoundPolicyDecision {
   };
 }
 
-function active(effectiveVolume: number, reason: SoundPolicyReason): SoundPolicyDecision {
+function active(
+  effectiveVolume: number,
+  reason: SoundPolicyReason,
+  allowOneShots = true,
+): SoundPolicyDecision {
   return {
     shouldPlayContinuousEngine: true,
-    allowOneShots: true,
+    allowOneShots,
     effectiveVolume,
     reason,
   };

@@ -122,8 +122,8 @@ describe("evaluateSoundPolicy", () => {
   it("allows a cooldown one-shot after active sound falls below threshold", () => {
     const decision = evaluateSoundPolicy(
       makeSettings({ cpuThresholdOn: 80, cpuThresholdOff: 75, cooldownPsshEnabled: true }),
-      makeRuntime({ soundActive: true }),
-      makeSignal({ smoothedCpuPercent: 30, throttle: 0.3, falling: true }),
+      makeRuntime({ currentCpuPercent: 95, soundActive: true }),
+      makeSignal({ rawCpuPercent: 5, smoothedCpuPercent: 30, throttle: 0.3, falling: true }),
     );
 
     expect(decision).toMatchObject({
@@ -134,17 +134,45 @@ describe("evaluateSoundPolicy", () => {
     });
   });
 
+  it("blocks cooldown one-shots if the previous raw CPU did not reach start threshold", () => {
+    const decision = evaluateSoundPolicy(
+      makeSettings({ cpuThresholdOn: 80, cpuThresholdOff: 75, cooldownPsshEnabled: true }),
+      makeRuntime({ currentCpuPercent: 50, soundActive: true }),
+      makeSignal({ rawCpuPercent: 30, smoothedCpuPercent: 30, throttle: 0.3, falling: true }),
+    );
+
+    expect(decision).toMatchObject({
+      shouldPlayContinuousEngine: false,
+      allowOneShots: false,
+      reason: "below_threshold",
+    });
+  });
+
   it("allows a spike one-shot once threshold allows engine sound", () => {
     const decision = evaluateSoundPolicy(
       makeSettings({ cpuThresholdOn: 50, cpuThresholdOff: 45, revBurstEnabled: true }),
       makeRuntime({ soundActive: false }),
-      makeSignal({ smoothedCpuPercent: 50, throttle: 0.5, spike: true }),
+      makeSignal({ rawCpuPercent: 50, smoothedCpuPercent: 50, throttle: 0.5, spike: true }),
     );
 
     expect(decision).toMatchObject({
       shouldPlayContinuousEngine: true,
       allowOneShots: true,
       reason: "spike",
+    });
+  });
+
+  it("blocks rev burst while smoothed CPU is active but raw CPU is below start threshold", () => {
+    const decision = evaluateSoundPolicy(
+      makeSettings({ cpuThresholdOn: 80, cpuThresholdOff: 75, revBurstEnabled: true }),
+      makeRuntime({ currentCpuPercent: 30, soundActive: true }),
+      makeSignal({ rawCpuPercent: 50, smoothedCpuPercent: 82, throttle: 0.82, spike: true }),
+    );
+
+    expect(decision).toMatchObject({
+      shouldPlayContinuousEngine: true,
+      allowOneShots: false,
+      reason: "above_threshold",
     });
   });
 
