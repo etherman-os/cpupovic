@@ -1,7 +1,7 @@
 [package]
 name = "cpupovic"
 version = "0.1.0"
-description = "Tray-first desktop toy that turns CPU load into ridiculous synthetic engine sound."
+description = "Tray-first desktop toy that turns CPU load into ridiculous engine sound."
 authors = ["etherman"]
 edition = "2021"
 
