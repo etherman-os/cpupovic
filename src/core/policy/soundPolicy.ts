@@ -47,17 +47,25 @@ export function evaluateSoundPolicy(
     settings.cpuThresholdOff,
   );
 
+  if (!thresholdAllowsContinuous) {
+    const allowCooldownOneShot =
+      runtimeState.soundActive && engineSignal.falling && settings.cooldownPsshEnabled;
+
+    return {
+      shouldPlayContinuousEngine: false,
+      allowOneShots: allowCooldownOneShot,
+      effectiveVolume: allowCooldownOneShot ? settings.volume : 0,
+      reason: "below_threshold",
+    };
+  }
+
   if (engineSignal.spike && settings.revBurstEnabled) {
     return {
-      shouldPlayContinuousEngine: thresholdAllowsContinuous,
+      shouldPlayContinuousEngine: true,
       allowOneShots: true,
       effectiveVolume: settings.volume,
       reason: "spike",
     };
-  }
-
-  if (!thresholdAllowsContinuous) {
-    return quiet("below_threshold");
   }
 
   if (engineSignal.throttle >= 0.85) {

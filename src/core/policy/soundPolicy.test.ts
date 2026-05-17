@@ -105,7 +105,7 @@ describe("evaluateSoundPolicy", () => {
     });
   });
 
-  it("allows a spike one-shot without forcing continuous sound below threshold", () => {
+  it("blocks spike one-shots below threshold when sound is inactive", () => {
     const decision = evaluateSoundPolicy(
       makeSettings({ cpuThresholdOn: 50, cpuThresholdOff: 45, revBurstEnabled: true }),
       makeRuntime({ soundActive: false }),
@@ -114,6 +114,35 @@ describe("evaluateSoundPolicy", () => {
 
     expect(decision).toMatchObject({
       shouldPlayContinuousEngine: false,
+      allowOneShots: false,
+      reason: "below_threshold",
+    });
+  });
+
+  it("allows a cooldown one-shot after active sound falls below threshold", () => {
+    const decision = evaluateSoundPolicy(
+      makeSettings({ cpuThresholdOn: 80, cpuThresholdOff: 75, cooldownPsshEnabled: true }),
+      makeRuntime({ soundActive: true }),
+      makeSignal({ smoothedCpuPercent: 30, throttle: 0.3, falling: true }),
+    );
+
+    expect(decision).toMatchObject({
+      shouldPlayContinuousEngine: false,
+      allowOneShots: true,
+      effectiveVolume: defaultSettings.volume,
+      reason: "below_threshold",
+    });
+  });
+
+  it("allows a spike one-shot once threshold allows engine sound", () => {
+    const decision = evaluateSoundPolicy(
+      makeSettings({ cpuThresholdOn: 50, cpuThresholdOff: 45, revBurstEnabled: true }),
+      makeRuntime({ soundActive: false }),
+      makeSignal({ smoothedCpuPercent: 50, throttle: 0.5, spike: true }),
+    );
+
+    expect(decision).toMatchObject({
+      shouldPlayContinuousEngine: true,
       allowOneShots: true,
       reason: "spike",
     });

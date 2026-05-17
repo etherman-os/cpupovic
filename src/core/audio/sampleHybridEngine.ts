@@ -143,10 +143,11 @@ export class SampleHybridEngine {
       layer.source.playbackRate.setTargetAtTime(rate, now, 0.2);
     }
 
-    const effectsAllowed = settings.enabled && !settings.muted && settings.volume > 0;
-    const effectVolume = decision.effectiveVolume || settings.volume * 0.55;
+    const effectsAllowed =
+      decision.allowOneShots && settings.enabled && !settings.muted && settings.volume > 0;
+    const effectVolume = decision.effectiveVolume;
 
-    if (effectsAllowed && decision.allowOneShots && signal.spike && settings.revBurstEnabled) {
+    if (effectsAllowed && signal.spike && settings.revBurstEnabled) {
       this.playEffect("revBurst", effectVolume, 0.55, profile, { durationCap: 0.9 });
 
       if (profile.id === "supara" && signal.throttle >= 0.42) {

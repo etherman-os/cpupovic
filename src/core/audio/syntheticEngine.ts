@@ -83,7 +83,7 @@ export class SyntheticEngineAudio {
       decision.allowOneShots &&
       ((signal.spike && settings.revBurstEnabled) ||
         (wantsContinuous && signal.throttle >= 0.88 && settings.redlineEnabled) ||
-        (signal.falling && decision.reason !== "muted" && settings.cooldownPsshEnabled));
+        (signal.falling && settings.cooldownPsshEnabled));
 
     if (!this.context && !this.activated) {
       return;
@@ -120,8 +120,8 @@ export class SyntheticEngineAudio {
       this.playRedlineTexture(acousticProfile, decision.effectiveVolume);
     }
 
-    if (signal.falling && decision.reason !== "muted" && settings.cooldownPsshEnabled) {
-      this.playCooldown(acousticProfile, decision.effectiveVolume || settings.volume * 0.4);
+    if (decision.allowOneShots && signal.falling && settings.cooldownPsshEnabled) {
+      this.playCooldown(acousticProfile, decision.effectiveVolume);
     }
   }
 
